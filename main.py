@@ -16,7 +16,7 @@ class IMG_Stegno:
         root.title('ImageSteganography by DataFlair')
         root.geometry('500x600')
         root.resizable(width=False, height=False)
-        root.config(bg='#e3f4f1')
+        root.config(bg='#e3f4f1') 
         frame = Frame(root)
         frame.grid()
 
