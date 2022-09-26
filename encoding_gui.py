@@ -2,7 +2,7 @@
 from tkinter import *
 from tkinter.filedialog import *
 import tkinter.filedialog
-from tkinter import messagebox
+from tkinter import messagebox,ttk
 from PIL import ImageTk
 from PIL import Image
 from io import BytesIO
@@ -66,10 +66,12 @@ class IMG_Stegno:
             FileOpen = StringVar()
             FileOpen = askopenfilename(initialdir="/Desktop", title="SelectFile",
                                        filetypes=(('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'), ("all type of files", "*.*")))
-
-            label_inputCoverPath.configure(text=FileOpen)
-            #label2.place(relx=0.3, rely=0.3)
-            my_img = Image.open(FileOpen)
+            if not FileOpen:
+                messagebox.showerror("Error", "You have selected nothing !")
+            else:
+                label_inputCoverPath.configure(text=FileOpen)
+                #label2.place(relx=0.3, rely=0.3)
+                my_img = Image.open(FileOpen)
 
         label1 = Label(F2,text="Name of the File")
         label1.config(font=('Helvetica', 14, 'bold'))
@@ -96,7 +98,10 @@ class IMG_Stegno:
         #EncodeButton.place(relx=0.4, rely=0.5)
         EncodeButton.grid(row=6,column=1 ,pady=5,sticky='n')
 
-
+        numberOfBits = [0, 1, 2, 3, 4, 5, 6, 7]
+        choiceVar = StringVar()
+        bitsComboBox = ttk.Combobox(F2, textvariable=choiceVar, values=numberOfBits)
+        bitsComboBox.grid(row=5, column=1, pady=5)
 
         F2.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
 
