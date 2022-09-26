@@ -1,9 +1,15 @@
+from tkinter import *
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import LEFT, ttk
 from tkinter import filedialog
 from tkinter.filedialog import askopenfilename
+from PIL import ImageTk
+from PIL import Image
+from io import BytesIO
+import  os
 
-window = tk.Tk()
+window = tk.Tk()#tkinter window
 window.title('ACW1 Group 8')
 
 #All frames in initialization
@@ -22,6 +28,15 @@ def OpenDecodeFrame():
 def openPayload():
     filePath = filedialog.askopenfilename()
     label_inputPayloadPath.configure(text=filePath)
+    if not filePath:
+        messagebox.showerror("Error","Please select file")
+    else:
+        if filePath.lower().endswith(('.png', '.jpg', '.jpeg')):
+            img = ImageTk.PhotoImage((Image.open(filePath).resize((300,200))))
+            label_image = Label(frm_encode, image = img)
+            label_image.image=img
+            label_image.grid(row=1,column=1,padx= 0,pady= 0)
+
 
 def openCoverload():
     filePath = filedialog.askopenfilename()
@@ -46,7 +61,7 @@ label_inputPayloadPath.grid(row= 2,column= 0)
 btn_inputPayload = tk.Button(frm_encode,text = 'Select',command=openPayload)
 btn_inputPayload.grid(row=2,column=1)
 
-#Cover object label & button (Encode) R3-R5
+###Cover object label & button (Encode) R3-R5
 label_inputCover = tk.Label(frm_encode,text="Input Cover Object file")
 label_inputCover.grid(row=3,column=0,padx= 0,pady= 5,sticky= 'nw')
 label_inputCoverPath = tk.Label(frm_encode,text='Cover Object file path ...',relief=tk.GROOVE,width=50,anchor='w')
@@ -54,7 +69,7 @@ label_inputCoverPath.grid(row= 4,column= 0)
 btn_inputCover = tk.Button(frm_encode,text = 'Select',command=openCoverload)
 btn_inputCover.grid(row=4,column=1)
 
-#Ouput Stego file (Encode) R5-R6
+###Ouput Stego file (Encode) R5-R6
 label_output = tk.Label(frm_encode,text="Output Encoded File Location")
 label_output.grid(row=5,column=0,padx= 0,pady= 5,sticky= 'nw')
 label_outputPath = tk.Label(frm_encode,text='Select file location to save...',relief=tk.GROOVE,width=50,anchor='w')
@@ -62,7 +77,7 @@ label_outputPath.grid(row= 6,column= 0)
 btn_output = tk.Button(frm_encode,text = 'Select',command=save)
 btn_output.grid(row=6,column=1)
 
-#Select bits (Encode) R7
+###Select bits (Encode) R7
 label_bits = tk.Label(frm_encode,text="Select number of bits: ")
 label_bits.grid(row=7,column=0,padx= 0,pady= 5,sticky= 'nw')
 numberOfBits = [0,1,2,3,4,5,6,7]
