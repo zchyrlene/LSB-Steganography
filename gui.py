@@ -35,7 +35,7 @@ def openPayload():
             img = ImageTk.PhotoImage((Image.open(filePath).resize((300,200))))
             label_image = Label(frm_encode, image = img)
             label_image.image=img
-            label_image.grid(row=1,column=1,padx= 0,pady= 0)
+            label_image.grid(row=8,column=0,padx= 0,pady= 0)
 
 
 def openCoverload():
@@ -87,7 +87,7 @@ bitsComboBox.grid(row=7,column=1,pady= 5)
 
 #Start encoding (Encode) R8
 btn_encode = tk.Button(frm_encode, text= 'Start Encoding')
-btn_encode.grid(row=8,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
+btn_encode.grid(row=9,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
 
 #Encode button on left side of window
 btn_encode = tk.Button(frm_buttons, text= 'Encode',command=OpenEncodeFrame)
