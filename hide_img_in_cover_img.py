@@ -108,31 +108,31 @@ def decodeImage(image_to_decode, n_bits):
     return createImage(data, image_to_decode.size)
 
 #no. of bits
-n_bits = 2
-#path of files replace them as per your need.
-image_to_hide_path = "pic.jpg"
-image_to_hide_in_path = "tree.jpg"
-#this is the path where we will save the encoded Image.
-encoded_image_path = "encoded.png"
+# n_bits = 2
+# #path of files replace them as per your need.
+# image_to_hide_path = "pic.jpg"
+# image_to_hide_in_path = "tree.jpg"
+# #this is the path where we will save the encoded Image.
+#encoded_image_path = "encoded.png"
+#
+# #PIL.Image object
+# image_to_hide = Image.open(image_to_hide_path)
+# image_to_hide_in = Image.open(image_to_hide_in_path)
+# print("Image to hide ", image_to_hide)
+# print("Image to hide in ", image_to_hide_in)
+# #to hide an image inside another image it they both need to be of the same size.
+# image_to_hide=image_to_hide.resize(image_to_hide_in.size)
+# # #encoding the image and saving it in the path
+# encodeImage(image_to_hide, image_to_hide_in, n_bits).save(encoded_image_path)
 
-#PIL.Image object
-image_to_hide = Image.open(image_to_hide_path)
-image_to_hide_in = Image.open(image_to_hide_in_path)
-print("Image to hide ", image_to_hide)
-print("Image to hide in ", image_to_hide_in)      
-#to hide an image inside another image it they both need to be of the same size.
-image_to_hide=image_to_hide.resize(image_to_hide_in.size)
-#encoding the image and saving it in the path
-encodeImage(image_to_hide, image_to_hide_in, n_bits).save(encoded_image_path)
-
-print("Image Encoded Successfully.")
+#print("Image Encoded Successfully.")
 
 #running the decode function
-n_bits = 2
-encoded_image_path = "encoded.png"
+# n_bits = 2
+# encoded_image_path = "encoded.png"
 
 #path where you would want to save decoded Image.
-decoded_image_path = "decoded.png"
-image_to_decode = Image.open(encoded_image_path)
-decodeImage(image_to_decode, n_bits).save(decoded_image_path)
-print("Image decoded Successfully!")
+# decoded_image_path = "decoded.png"
+# image_to_decode = Image.open(encoded_image_path)
+# decodeImage(image_to_decode, n_bits).save(decoded_image_path)
+#print("Image decoded Successfully!")

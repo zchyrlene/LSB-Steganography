@@ -1,4 +1,5 @@
-# DataFlair- import modules
+# import modules
+import tkinter
 from tkinter import *
 from tkinter.filedialog import *
 import tkinter.filedialog
@@ -8,20 +9,22 @@ from PIL import Image
 from io import BytesIO
 import os
 
+import hide_img_in_cover_img
 
 class IMG_Stegno:
+
     output_image_size = 0
 
-    # DataFlair- main frame or start page
+    # main frame or start page
     def main(self, root):
-        root.title('ImageSteganography by DataFlair')
+        root.title('LSB Steganography')
         root.geometry('800x600')
         root.resizable(width=False, height=False)
         root.config(bg='#e3f4f1') 
         frame = Frame(root)
         frame.grid()
 
-        title = Label(frame, text='DataFlair Image Steganography')
+        title = Label(frame, text='LSB Steganography')
         title.config(font=('Times new roman', 25, 'bold'))
         title.grid(pady=10)
         title.config(bg='#e3f4f1')
@@ -38,11 +41,38 @@ class IMG_Stegno:
         root.grid_rowconfigure(1, weight=1)
         root.grid_columnconfigure(0, weight=1)
 
-    # DataFlair- back function to loop back to main screen
+    # back function to loop back to main screen
     def back(self, frame):
         frame.destroy()
         self.main(root)
 
+    def OpenFile(self):
+        global my_img
+        FileOpen = StringVar()
+        FileOpen = askopenfilename(initialdir="/Desktop", title="SelectFile",
+                                   filetypes=(('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'),
+                                              ("all type of files", "*.*")))
+        if not FileOpen:
+            messagebox.showerror("Error", "You have selected nothing !")
+        else:
+            label_inputCoverPath.configure(text=FileOpen)
+            my_img = Image.open(FileOpen)
+
+    def OpenImagePayloadFile(self):
+        global my_payloadImg
+        global image_to_hide
+        FileOpen2 = StringVar()
+        FileOpen2 = askopenfilename(initialdir="/Desktop", title="SelectFile",
+                                   filetypes=(('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'),
+                                              ("all type of files", "*.*")))
+        if not FileOpen2:
+            messagebox.showerror("Error", "You have selected nothing !")
+        else:
+            label_inputPayloadPath.configure(text=FileOpen2)
+            my_payloadImg = Image.open(FileOpen2)
+            image_to_hide = my_payloadImg.resize(my_img.size)
+
+    # frame for choosing encoding options
     def choose_frame0(self,F):
         F.destroy()
         F0 = Frame(root)
@@ -51,7 +81,7 @@ class IMG_Stegno:
         button_bws.config(font=('Helvetica', 18), bg='#e8c1c7')
         button_bws.grid()
 
-        button_bws1 = Button(F0, text='Hide image in image')
+        button_bws1 = Button(F0, text='Hide image in image', command=lambda: self.encode_frame2(F0))
         button_bws1.config(font=('Helvetica', 18), bg='#e8c1c7')
         button_bws1.grid()
 
@@ -65,35 +95,14 @@ class IMG_Stegno:
         button_back.grid()
         F0.grid()
 
-    # DataFlair- frame for encode page
+    # frame for hiding text in image
     def encode_frame1(self, F):
+        global label_inputCoverPath
         F.destroy()
         F2 = Frame(root)
         label1 = Label(F2, text='Select the Image in which you want to hide text :')
         label1.config(font=('Times new roman', 20, 'bold'), bg='#e3f4f1')
         label1.grid(columnspan=5)
-
-        # button_bws = Button(F2, text='Select', command=lambda: self.encode_frame2(F2))
-        # button_bws.config(font=('Helvetica', 18), bg='#e8c1c7')
-        # button_bws.grid()
-        # button_back = Button(F2, text='Cancel', command=lambda: IMG_Stegno.back(self, F2))
-        # button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
-        # button_back.grid(pady=15)
-        # button_back.grid()
-
-
-
-        def OpenFile():
-            global my_img
-            FileOpen = StringVar()
-            FileOpen = askopenfilename(initialdir="/Desktop", title="SelectFile",
-                                       filetypes=(('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'), ("all type of files", "*.*")))
-            if not FileOpen:
-                messagebox.showerror("Error", "You have selected nothing !")
-            else:
-                label_inputCoverPath.configure(text=FileOpen)
-                #label2.place(relx=0.3, rely=0.3)
-                my_img = Image.open(FileOpen)
 
         label1 = Label(F2,text="Name of the File")
         label1.config(font=('Helvetica', 14, 'bold'))
@@ -102,8 +111,7 @@ class IMG_Stegno:
         label_inputCoverPath = Label(F2, text='Cover Object file path ...', relief=GROOVE, width=57)
         label_inputCoverPath.grid(row=3, column= 1,padx=5)
 
-        SelectButton = Button(F2,text="Select the file", command=OpenFile)
-        #SelectButton.place(relx=0.1, rely=0.4)
+        SelectButton = Button(F2,text="Select the file", command=self.OpenFile)
         SelectButton.grid(row=3,column=2,padx= 5,pady= 0)
 
         label2 = Label(F2, text='Enter the message')
@@ -117,7 +125,6 @@ class IMG_Stegno:
         label1.grid(row=5,column=0,padx= 0,pady= 0,sticky= 'nw')
 
         EncodeButton = Button(F2,text="Encode",command=lambda: [self.enc_fun(text_a, my_img), IMG_Stegno.back(self, F2)])
-        #EncodeButton.place(relx=0.4, rely=0.5)
         EncodeButton.grid(row=6,column=1 ,pady=5,sticky='n')
 
         numberOfBits = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -132,7 +139,60 @@ class IMG_Stegno:
 
         F2.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
 
-    # DataFlair- frame for decode page
+    # frame for hiding image in image
+    def encode_frame2(self, F):
+        global label_inputCoverPath
+        global label_inputPayloadPath
+
+        F.destroy()
+        F2i = Frame(root)
+        label1 = Label(F2i, text='Select the Image in which you want to hide image :')
+        label1.config(font=('Times new roman', 20, 'bold'), bg='#e3f4f1')
+        label1.grid(columnspan=5)
+
+        coverLabel = Label(F2i,text="Cover Image")
+        coverLabel.config(font=('Helvetica', 14, 'bold'))
+        coverLabel.grid(row=3,column=0,padx= 0,pady= 0,sticky= 'nw')
+
+        label_inputCoverPath = Label(F2i, text='Cover Object file path ...', relief=GROOVE, width=57)
+        label_inputCoverPath.grid(row=3, column= 1,padx=5)
+
+        SelectButton = Button(F2i,text="Select the file", command=self.OpenFile)
+        SelectButton.grid(row=3,column=2,padx= 5,pady= 0)
+
+        payloadLabel = Label(F2i, text="Payload Image")
+        payloadLabel.config(font=('Helvetica', 14, 'bold'))
+        payloadLabel.grid(row=4, column=0, padx=0, pady=0, sticky='nw')
+
+        label_inputPayloadPath = Label(F2i, text='Payload file path ...', relief=GROOVE, width=57)
+        label_inputPayloadPath.grid(row=4, column=1, padx=5)
+
+        payloadButton = Button(F2i, text="Select the file", command=self.OpenImagePayloadFile)
+        payloadButton.grid(row=4, column=2, padx=5, pady=0)
+
+        label1 = Label(F2i,text="Number of bits")
+        label1.config(font=('Helvetica', 14, 'bold'))
+        label1.grid(row=5,column=0,padx= 0,pady= 0,sticky= 'nw')
+
+        numberOfBits = [0, 1, 2, 3, 4, 5, 6, 7]
+        choiceVar2 = IntVar()
+        bitsComboBox = ttk.Combobox(F2i, textvariable=choiceVar2, values=numberOfBits)
+        bitsComboBox.grid(row=5, column=1, pady=5)
+        current_bit = bitsComboBox.get()
+        print(type(current_bit))
+        print(type(choiceVar2))
+
+        EncodeButton = Button(F2i,text="Encode",command=lambda: [hide_img_in_cover_img.encodeImage(image_to_hide, my_img, 3).save("encode3.png"),hide_img_in_cover_img.decodeImage(Image.open("encode3.png"), 3).save("decode3.png"),IMG_Stegno.back(self, F2i)])
+        EncodeButton.grid(row=6,column=1 ,pady=5,sticky='n')
+
+        button_back = Button(F2i, text='Cancel', command=lambda: IMG_Stegno.choose_frame0(self, F2i))
+        button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_back.grid(pady=15)
+        button_back.grid()
+
+        F2i.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
+
+    # frame for decode page
     def decode_frame1(self, F):
         F.destroy()
         d_f2 = Frame(root)
@@ -149,42 +209,42 @@ class IMG_Stegno:
         button_back.grid()
         d_f2.grid()
 
-    # DataFlair- function to encode image
-    def encode_frame2(self, e_F2):
-        e_pg = Frame(root)
-        myfile = tkinter.filedialog.askopenfilename(
-            filetypes=([('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'), ('All Files', '*.*')]))
-        if not myfile:
-            messagebox.showerror("Error", "You have selected nothing !")
-        else:
-            my_img = Image.open(myfile)
-            new_image = my_img.resize((300, 200))
-            img = ImageTk.PhotoImage(new_image)
-            label3 = Label(e_pg, text='Selected Image')
-            label3.config(font=('Helvetica', 14, 'bold'))
-            label3.grid()
-            board = Label(e_pg, image=img)
-            board.image = img
-            self.output_image_size = os.stat(myfile)
-            self.o_image_w, self.o_image_h = my_img.size
-            board.grid()
-            label2 = Label(e_pg, text='Enter the message')
-            label2.config(font=('Helvetica', 14, 'bold'))
-            label2.grid(pady=15)
-            text_a = Text(e_pg, width=50, height=10)
-            text_a.grid()
-            encode_button = Button(e_pg, text='Cancel', command=lambda: IMG_Stegno.back(self, e_pg))
-            encode_button.config(font=('Helvetica', 14), bg='#e8c1c7')
-            data = text_a.get("1.0", "end-1c")
-            button_back = Button(e_pg, text='Encode',
-                                 command=lambda: [self.enc_fun(text_a, my_img), IMG_Stegno.back(self, e_pg)])
-            button_back.config(font=('Helvetica', 14), bg='#e8c1c7')
-            button_back.grid(pady=15)
-            encode_button.grid()
-            e_pg.grid(row=1)
-            e_F2.destroy()
+    # function to encode image
+    # def encode_frame2(self, e_F2):
+    #     e_pg = Frame(root)
+    #     myfile = tkinter.filedialog.askopenfilename(
+    #         filetypes=([('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'), ('All Files', '*.*')]))
+    #     if not myfile:
+    #         messagebox.showerror("Error", "You have selected nothing !")
+    #     else:
+    #         my_img = Image.open(myfile)
+    #         new_image = my_img.resize((300, 200))
+    #         img = ImageTk.PhotoImage(new_image)
+    #         label3 = Label(e_pg, text='Selected Image')
+    #         label3.config(font=('Helvetica', 14, 'bold'))
+    #         label3.grid()
+    #         board = Label(e_pg, image=img)
+    #         board.image = img
+    #         self.output_image_size = os.stat(myfile)
+    #         self.o_image_w, self.o_image_h = my_img.size
+    #         board.grid()
+    #         label2 = Label(e_pg, text='Enter the message')
+    #         label2.config(font=('Helvetica', 14, 'bold'))
+    #         label2.grid(pady=15)
+    #         text_a = Text(e_pg, width=50, height=10)
+    #         text_a.grid()
+    #         encode_button = Button(e_pg, text='Cancel', command=lambda: IMG_Stegno.back(self, e_pg))
+    #         encode_button.config(font=('Helvetica', 14), bg='#e8c1c7')
+    #         data = text_a.get("1.0", "end-1c")
+    #         button_back = Button(e_pg, text='Encode',
+    #                              command=lambda: [self.enc_fun(text_a, my_img), IMG_Stegno.back(self, e_pg)])
+    #         button_back.config(font=('Helvetica', 14), bg='#e8c1c7')
+    #         button_back.grid(pady=15)
+    #         encode_button.grid()
+    #         e_pg.grid(row=1)
+    #         e_F2.destroy()
 
-    # DataFlair- function to decode image
+    # function to decode image
     def decode_frame2(self, d_F2):
         d_F3 = Frame(root)
         myfiles = tkinter.filedialog.askopenfilename(
@@ -216,7 +276,7 @@ class IMG_Stegno:
             d_F3.grid(row=1)
             d_F2.destroy()
 
-    # DataFair- function to decode data
+    # function to decode data
     def decode(self, image):
         image_data = iter(image.getdata())
         data = ''
@@ -236,7 +296,7 @@ class IMG_Stegno:
             if pixels[-1] % 2 != 0:
                 return data
 
-    # DataFlair- function to generate data
+    # function to generate data
     def generate_Data(self, data):
         new_data = []
 
@@ -244,7 +304,7 @@ class IMG_Stegno:
             new_data.append(format(ord(i), '08b'))
         return new_data
 
-    # DataFlair- function to modify the pixels of image
+    # function to modify the pixels of image
     def modify_Pix(self, pix, data):
         dataList = self.generate_Data(data)
         dataLen = len(dataList)
@@ -275,7 +335,7 @@ class IMG_Stegno:
             yield pix[3:6]
             yield pix[6:9]
 
-    # DataFlair- function to enter the data pixels in image
+    # function to enter the data pixels in image
     def encode_enc(self, newImg, data):
         w = newImg.size[0]
         (x, y) = (0, 0)
@@ -290,7 +350,7 @@ class IMG_Stegno:
             else:
                 x += 1
 
-    # DataFlair- function to enter hidden text
+    # function to enter hidden text
     def enc_fun(self, text_a, myImg):
         data = text_a.get("1.0", "end-1c")
         if (len(data) == 0):
