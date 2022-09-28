@@ -27,7 +27,7 @@ class IMG_Stegno:
         title.config(bg='#e3f4f1')
         title.grid(row=1)
 
-        encode = Button(frame, text="Encode", command=lambda: self.encode_frame1(frame), padx=14, bg='#e3f4f1')
+        encode = Button(frame, text="Encode", command=lambda: self.choose_frame0(frame), padx=14, bg='#e3f4f1')
         encode.config(font=('Helvetica', 14), bg='#e8c1c7')
         encode.grid(row=2)
         decode = Button(frame, text="Decode", command=lambda: self.decode_frame1(frame), padx=14, bg='#e3f4f1')
@@ -42,6 +42,28 @@ class IMG_Stegno:
     def back(self, frame):
         frame.destroy()
         self.main(root)
+
+    def choose_frame0(self,F):
+        F.destroy()
+        F0 = Frame(root)
+
+        button_bws = Button(F0, text='Hide text in image', command=lambda: self.encode_frame1(F0))
+        button_bws.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_bws.grid()
+
+        button_bws1 = Button(F0, text='Hide image in image')
+        button_bws1.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_bws1.grid()
+
+        button_bws2 = Button(F0, text='Hide text in mp3 file')
+        button_bws2.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_bws2.grid()
+
+        button_back = Button(F0, text='Cancel', command=lambda: IMG_Stegno.back(self, F0))
+        button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_back.grid(pady=15)
+        button_back.grid()
+        F0.grid()
 
     # DataFlair- frame for encode page
     def encode_frame1(self, F):
@@ -102,6 +124,11 @@ class IMG_Stegno:
         choiceVar = StringVar()
         bitsComboBox = ttk.Combobox(F2, textvariable=choiceVar, values=numberOfBits)
         bitsComboBox.grid(row=5, column=1, pady=5)
+
+        button_back = Button(F2, text='Cancel', command=lambda: IMG_Stegno.choose_frame0(self, F2))
+        button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_back.grid(pady=15)
+        button_back.grid()
 
         F2.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
 
