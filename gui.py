@@ -8,14 +8,18 @@ from PIL import ImageTk
 from PIL import Image
 from io import BytesIO
 import  os
+import pygame #for mp3 files
 
 window = tk.Tk()#tkinter window
 window.title('ACW1 Group 8')
+pygame.mixer.init()# initialise the pygame
 
 #All frames in initialization
 frm_buttons = tk.Frame(window, relief= tk.RAISED,bd = 2)
 frm_encode = tk.Frame(window)
 frm_decode = tk.Frame(window)
+
+fName=""
 
 def OpenEncodeFrame():
     frm_decode.grid_remove()
@@ -27,17 +31,29 @@ def OpenDecodeFrame():
 
 def openPayload():
     filePath = filedialog.askopenfilename()
+    global fName
+    fName=filePath
     label_inputPayloadPath.configure(text=filePath)
     if not filePath:
         messagebox.showerror("Error","Please select file")
     else:
+        #print(fName)
         if filePath.lower().endswith(('.png', '.jpg', '.jpeg')):
             img = ImageTk.PhotoImage((Image.open(filePath).resize((300,200))))
             label_image = Label(frm_encode, image = img)
             label_image.image=img
             label_image.grid(row=8,column=0,padx= 0,pady= 0)
+        elif filePath.lower().endswith('.mp3'):
+            play_btn()
 
+def play():
+    pygame.mixer.music.load(fName)
+    pygame.mixer.music.play(loops=0)
 
+def play_btn():
+    play_button = Button(frm_encode, text='Play mp3 file',relief=GROOVE, command=play)
+    play_button.grid(row=8,column=0)
+    
 def openCoverload():
     filePath = filedialog.askopenfilename()
     label_inputCoverPath.configure(text=filePath)
@@ -98,5 +114,7 @@ btn_decode = tk.Button(frm_buttons, text= 'Decode',command=OpenDecodeFrame)
 btn_decode.grid(row=1,column=0,sticky= 'ew',padx = 5, pady = 5)
 
 frm_buttons.grid(row=0,column=0,sticky= 'ns')
+
+play_button = Button(frm_encode, text='Play mp3 file', font=("Arial", 12),relief=GROOVE, command=play)
 
 window.mainloop()
