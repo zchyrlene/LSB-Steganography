@@ -10,6 +10,7 @@ from io import BytesIO
 import  os
 import pygame #for mp3 files
 from tkVideoPlayer import TkinterVideo #for mp4 files
+from tkinter import filedialog
 
 window = tk.Tk()#tkinter window
 window.title('ACW1 Group 8')
@@ -51,6 +52,16 @@ def openPayload():
             videoplayer.load(filePath)
             videoplayer.grid(row=8,column=0,padx= 0,pady= 0)
             videoplayer.play() # play the video
+        elif filePath.lower().endswith('.txt'):
+            pathh = Entry(frm_encode)    
+            pathh.insert(END, filePath)
+            filePath = open(filePath) 
+            data = filePath.read()
+            txtarea = Text(frm_encode, width=40, height=10)
+            txtarea.insert(END, data)
+            filePath.close()
+            pathh.grid(row=8,column=0,padx= 0,pady= 0)
+            txtarea.grid(row=8,column=0,padx= 0,pady= 0)
 
 def play():
     pygame.mixer.music.load(fName)
