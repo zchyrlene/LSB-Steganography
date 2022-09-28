@@ -85,7 +85,7 @@ class IMG_Stegno:
         button_bws1.config(font=('Helvetica', 18), bg='#e8c1c7')
         button_bws1.grid()
 
-        button_bws2 = Button(F0, text='Hide text in mp3 file')
+        button_bws2 = Button(F0, text='Hide text in mp3 file', command=lambda: self.encode_frame3(F0))
         button_bws2.config(font=('Helvetica', 18), bg='#e8c1c7')
         button_bws2.grid()
 
@@ -191,6 +191,23 @@ class IMG_Stegno:
         button_back.grid()
 
         F2i.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
+
+    # frame for hiding stuff in a music file/video?
+    def encode_frame3(self, F):
+        F.destroy()
+        F3 = Frame(root)
+        label1 = Label(F3, text='Select the mp3/mp4 in which you want to hide a payload :')
+        label1.config(font=('Times new roman', 20, 'bold'), bg='#e3f4f1')
+        label1.grid(columnspan=5)
+
+        #move stuff here
+
+        button_back = Button(F3, text='Cancel', command=lambda: IMG_Stegno.choose_frame0(self, F3))
+        button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_back.grid(pady=15)
+        button_back.grid()
+
+        F3.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
 
     # frame for decode page
     def decode_frame1(self, F):
