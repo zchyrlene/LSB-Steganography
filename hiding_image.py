@@ -1,6 +1,6 @@
 #Using this website https://towardsdatascience.com/steganography-hiding-an-image-inside-another-77ca66b2acb1
 
-mport argparse
+import argparse
 
 from PIL import Image
 
