@@ -178,11 +178,9 @@ class IMG_Stegno:
         choiceVar2 = IntVar()
         bitsComboBox = ttk.Combobox(F2i, textvariable=choiceVar2, values=numberOfBits)
         bitsComboBox.grid(row=5, column=1, pady=5)
-        current_bit = bitsComboBox.get()
-        print(type(current_bit))
-        print(type(choiceVar2))
+        #current_bit = int(bitsComboBox.get())
 
-        EncodeButton = Button(F2i,text="Encode",command=lambda: [hide_img_in_cover_img.encodeImage(image_to_hide, my_img, 3).save("encode3.png"),hide_img_in_cover_img.decodeImage(Image.open("encode3.png"), 3).save("decode3.png"),IMG_Stegno.back(self, F2i)])
+        EncodeButton = Button(F2i,text="Encode",command=lambda: [hide_img_in_cover_img.encodeImage(image_to_hide, my_img, int(bitsComboBox.get())).save("encode3.png"),hide_img_in_cover_img.decodeImage(Image.open("encode3.png"), 3).save("decode3.png"),IMG_Stegno.back(self, F2i)])
         EncodeButton.grid(row=6,column=1 ,pady=5,sticky='n')
 
         button_back = Button(F2i, text='Cancel', command=lambda: IMG_Stegno.choose_frame0(self, F2i))
