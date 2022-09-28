@@ -9,6 +9,7 @@ from PIL import Image
 from io import BytesIO
 import  os
 import pygame #for mp3 files
+from tkVideoPlayer import TkinterVideo #for mp4 files
 
 window = tk.Tk()#tkinter window
 window.title('ACW1 Group 8')
@@ -38,13 +39,18 @@ def openPayload():
         messagebox.showerror("Error","Please select file")
     else:
         #print(fName)
-        if filePath.lower().endswith(('.png', '.jpg', '.jpeg')):
+        if filePath.lower().endswith(('.png', '.jpg', '.jpeg')):#display image
             img = ImageTk.PhotoImage((Image.open(filePath).resize((300,200))))
             label_image = Label(frm_encode, image = img)
             label_image.image=img
             label_image.grid(row=8,column=0,padx= 0,pady= 0)
-        elif filePath.lower().endswith('.mp3'):
+        elif filePath.lower().endswith('.mp3'):#play mp3
             play_btn()
+        elif filePath.lower().endswith('.mp4'):#play mp4
+            videoplayer = TkinterVideo(master=frm_encode, scaled=True)
+            videoplayer.load(filePath)
+            videoplayer.grid(row=8,column=0,padx= 0,pady= 0)
+            videoplayer.play() # play the video
 
 def play():
     pygame.mixer.music.load(fName)
