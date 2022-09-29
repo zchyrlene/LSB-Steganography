@@ -1,3 +1,5 @@
+############### playing around with codes ######################
+
 from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
@@ -46,7 +48,6 @@ def OpenEncodeOptionsFrame():
     option3=Button(frm_encode_options, text='Encode Image in Text',relief=GROOVE, command=OpenEncodeImageInTextFrame)
     option3.grid(row=2,column=0)
     frm_encode_options.grid(row=0,column=1,sticky='nsw')
-    
 
 def OpenEncodeTextInImageFrame():
     frm_encode_options.grid_remove()
@@ -57,7 +58,6 @@ def OpenEncodeTextInImageFrame():
     #Payload object label & button (Encode) R1-R2
     label_inputPayload = tk.Label(frm_encode,text="Input Payload File")
     label_inputPayload.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
-    global label_inputPayloadPath
     label_inputPayloadPath = tk.Label(frm_encode,text='Payload file path...',relief=tk.GROOVE,width=50,anchor='w',)
     label_inputPayloadPath.grid(row= 2,column= 0)
     btn_inputPayload = tk.Button(frm_encode,text = 'Select',command=openPayloadEncodedImage)
@@ -72,7 +72,6 @@ def OpenEncodeTextInImageFrame():
     ###Ouput Stego file (Encode) R5-R6
     label_output = tk.Label(frm_encode,text="Output Encoded File Location")
     label_output.grid(row=7,column=0,padx= 0,pady= 5,sticky= 'nw')
-    global label_outputPath
     label_outputPath = tk.Label(frm_encode,text='Saved file path...',relief=tk.GROOVE,width=50,anchor='w')
     label_outputPath.grid(row= 8,column= 0)
     btn_output = tk.Button(frm_encode,text = 'Select',command=save)
@@ -102,7 +101,6 @@ def OpenEncodeImageInImageFrame():
     #Payload object label & button (Encode) R1-R2
     label_inputPayload = tk.Label(frm_encode,text="Input Payload File")
     label_inputPayload.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
-    global label_inputPayloadPath
     label_inputPayloadPath = tk.Label(frm_encode,text='Payload file path...',relief=tk.GROOVE,width=50,anchor='w',)
     label_inputPayloadPath.grid(row= 2,column= 0)
     btn_inputPayload = tk.Button(frm_encode,text = 'Select',command=openPayloadEncodedImage)
@@ -120,7 +118,6 @@ def OpenEncodeImageInImageFrame():
     ###Ouput Stego file (Encode) R5-R6
     label_output = tk.Label(frm_encode,text="Output Encoded File Location")
     label_output.grid(row=7,column=0,padx= 0,pady= 5,sticky= 'nw')
-    global label_outputPath
     label_outputPath = tk.Label(frm_encode,text='Saved file path...',relief=tk.GROOVE,width=50,anchor='w')
     label_outputPath.grid(row= 8,column= 0)
     btn_output = tk.Button(frm_encode,text = 'Select',command=save)
@@ -150,7 +147,6 @@ def OpenEncodeImageInTextFrame():
     #Payload object label & button (Encode) R1-R2
     label_inputPayload = tk.Label(frm_encode,text="Input Payload File")
     label_inputPayload.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
-    global label_inputPayloadPath
     label_inputPayloadPath = tk.Label(frm_encode,text='Payload file path...',relief=tk.GROOVE,width=50,anchor='w',)
     label_inputPayloadPath.grid(row= 2,column= 0)
     btn_inputPayload = tk.Button(frm_encode,text = 'Select')
@@ -168,7 +164,6 @@ def OpenEncodeImageInTextFrame():
     ###Ouput Stego file (Encode) R5-R6
     label_output = tk.Label(frm_encode,text="Output Encoded File Location")
     label_output.grid(row=7,column=0,padx= 0,pady= 5,sticky= 'nw')
-    global label_outputPath
     label_outputPath = tk.Label(frm_encode,text='Saved file path...',relief=tk.GROOVE,width=50,anchor='w')
     label_outputPath.grid(row= 8,column= 0)
     btn_output = tk.Button(frm_encode,text = 'Select',command=save)
@@ -192,14 +187,16 @@ def OpenDecodeFrame():
     frm_encode_options.grid_remove()
     frm_decode.grid(row=0,column=1,sticky='nsw')
 
-#function to open payload of images
+#Display preview of payload in frame (Encode) R8
+#Supports png, jpg, jpeg, mp3, mp4, txt
 def openPayloadEncodedImage():
     filePath = filedialog.askopenfilename(initialdir="/Desktop", title="SelectFile",
                                    filetypes=(('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'),
                                               ("all type of files", "*.*")))
     global fName
     fName=filePath
-    label_inputPayloadPath.configure(text=filePath)
+    label_inputPayloadPath = tk.Label(frm_encode,text=filePath,relief=tk.GROOVE,width=50,anchor='w',)
+    label_inputPayloadPath.grid(row= 2,column= 0)
 
     if not filePath:
         messagebox.showerror("Error","Please select file")
@@ -251,8 +248,8 @@ def openPayloadDecoded():
     filePath = filedialog.askopenfilename()
     global fName
     fName=filePath
-    label_inputPayloadPath.configure(text=filePath)
-
+    label_inputPayloadPath = tk.Label(frm_encode_options,text=filePath,relief=tk.GROOVE,width=50,anchor='w',)
+    label_inputPayloadPath.grid(row= 2,column= 0)
     if not filePath:
         messagebox.showerror("Error","Please select file")
     else:
@@ -297,9 +294,9 @@ def openCoverload():
 
 def save():
     filePath = filedialog.askdirectory()
-    label_outputPath.configure(text=filePath)
-    # label_outputPath = tk.Label(frm_encode,text=filePath,relief=tk.GROOVE,width=50,anchor='w')
-    # label_outputPath.grid(row= 6,column= 0)
+    #label_outputPath.configure(text=filePath)
+    label_outputPath = tk.Label(frm_encode,text=filePath,relief=tk.GROOVE,width=50,anchor='w')
+    label_outputPath.grid(row= 6,column= 0)
 
 def generate_Data(data):
     new_data = []
@@ -413,37 +410,35 @@ window.columnconfigure(1,minsize= 600, weight= 1)
 # btn_encode = tk.Button(frm_encode, text= 'Start Encoding')
 # btn_encode.grid(row=9,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
 
-#Frame Title (Decode) R0
-label_title2 = tk.Label(frm_decode,text='DECODE DATA',font=('Arial',15))
-label_title2.grid(row= 0,column= 0,columnspan= 2,padx= 5,pady= 5,sticky= 'new')
+# #Frame Title (Decode) R0
+# label_title2 = tk.Label(frm_decode,text='DECODE DATA',font=('Arial',15))
+# label_title2.grid(row= 0,column= 0,columnspan= 2,padx= 5,pady= 5,sticky= 'new')
 
-#Input Encoded object label & button (Decode) R1-R2
-label_inputEncoded = tk.Label(frm_decode,text="Input encoded File")
-label_inputEncoded.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
-label_inputEncodedPath = tk.Label(frm_decode,text='Encoded file path ...',relief=tk.GROOVE,width=50,anchor='w',)
-label_inputEncodedPath.grid(row= 2,column= 0)
-btn_inputEncoded = tk.Button(frm_decode,text = 'Select',)
-btn_inputEncoded.grid(row=2,column=1)
+# #Input Encoded object label & button (Decode) R1-R2
+# label_inputEncoded = tk.Label(frm_decode,text="Input encoded File")
+# label_inputEncoded.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
+# label_inputEncodedPath = tk.Label(frm_decode,text='Encoded file path ...',relief=tk.GROOVE,width=50,anchor='w',)
+# label_inputEncodedPath.grid(row= 2,column= 0)
+# btn_inputEncoded = tk.Button(frm_decode,text = 'Select',)
+# btn_inputEncoded.grid(row=2,column=1)
 
-#Ouput Stego file (Decode) R3-R4
-label_output = tk.Label(frm_decode,text="Output Encoded File Location")
-label_output.grid(row=3,column=0,padx= 0,pady= 5,sticky= 'nw')
-label_outputPath = tk.Label(frm_decode,text='Select file location to save...',relief=tk.GROOVE,width=50,anchor='w')
-label_outputPath.grid(row= 4,column= 0)
-btn_output = tk.Button(frm_decode,text = 'Select')
-btn_output.grid(row=4,column=1)
+# #Ouput Stego file (Decode) R3-R4
+# label_output = tk.Label(frm_decode,text="Output Encoded File Location")
+# label_output.grid(row=3,column=0,padx= 0,pady= 5,sticky= 'nw')
+# label_outputPath = tk.Label(frm_decode,text='Select file location to save...',relief=tk.GROOVE,width=50,anchor='w')
+# label_outputPath.grid(row= 4,column= 0)
+# btn_output = tk.Button(frm_decode,text = 'Select')
+# btn_output.grid(row=4,column=1)
 
-#Select bits (Decode) R5
-label_bits = tk.Label(frm_decode,text="Select number of bits: ")
-label_bits.grid(row=5,column=0,padx= 0,pady= 5,sticky= 'nw')
-numberOfBits = [0,1,2,3,4,5,6,7]
-choiceVar = tk.StringVar()
-bitsComboBox = ttk.Combobox(frm_decode,textvariable=choiceVar,values=numberOfBits)
-bitsComboBox.grid(row=5,column=1,pady= 5)
+# #Select bits (Decode) R5
+# label_bits = tk.Label(frm_decode,text="Select number of bits: ")
+# label_bits.grid(row=5,column=0,padx= 0,pady= 5,sticky= 'nw')
+# bitsComboBox = ttk.Combobox(frm_decode,textvariable=choiceVar,values=numberOfBits)
+# bitsComboBox.grid(row=5,column=1,pady= 5)
 
-#Start decoding (Decode) R7
-btn_encode = tk.Button(frm_decode, text= 'Start Decoding')
-btn_encode.grid(row=7,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
+# #Start decoding (Decode) R7
+# btn_encode = tk.Button(frm_decode, text= 'Start Decoding')
+# btn_encode.grid(row=7,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
 
 #Encode button on left side of window
 btn_encode = tk.Button(frm_buttons, text= 'Encode',command=OpenEncodeOptionsFrame)
