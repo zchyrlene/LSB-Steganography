@@ -31,7 +31,9 @@ def OpenDecodeFrame():
     frm_encode.grid_remove()
     frm_decode.grid(row=0,column=1,sticky='nsw')
 
-def openPayload():
+#Display preview of payload in frame (Encode) R8
+#Supports png, jpg, jpeg, mp3, mp4, txt
+def openPayloadEncoded():
     filePath = filedialog.askopenfilename()
     global fName
     fName=filePath
@@ -63,6 +65,40 @@ def openPayload():
             pathh.grid(row=8,column=0,padx= 0,pady= 0)
             txtarea.grid(row=8,column=0,padx= 0,pady= 0)
 
+#Display preview of encoded file in frame (Decode) R6
+#Supports png, jpg, jpeg, mp3, mp4, txt
+def openPayloadDecoded():
+    filePath = filedialog.askopenfilename()
+    global fName
+    fName=filePath
+    label_inputPayloadPath.configure(text=filePath)
+    if not filePath:
+        messagebox.showerror("Error","Please select file")
+    else:
+        #print(fName)
+        if filePath.lower().endswith(('.png', '.jpg', '.jpeg')):#display image
+            img = ImageTk.PhotoImage((Image.open(filePath).resize((300,200))))
+            label_image = Label(frm_encode, image = img)
+            label_image.image=img
+            label_image.grid(row=6,column=0,padx= 0,pady= 0)
+        elif filePath.lower().endswith('.mp3'):#play mp3
+            play_btn()
+        elif filePath.lower().endswith('.mp4'):#play mp4
+            videoplayer = TkinterVideo(master=frm_encode, scaled=True)
+            videoplayer.load(filePath)
+            videoplayer.grid(row=6,column=0,padx= 0,pady= 0)
+            videoplayer.play() # play the video
+        elif filePath.lower().endswith('.txt'):
+            pathh = Entry(frm_encode)    
+            pathh.insert(END, filePath)
+            filePath = open(filePath) 
+            data = filePath.read()
+            txtarea = Text(frm_encode, width=40, height=10)
+            txtarea.insert(END, data)
+            filePath.close()
+            pathh.grid(row=6,column=0,padx= 0,pady= 0)
+            txtarea.grid(row=6,column=0,padx= 0,pady= 0)
+
 def play():
     pygame.mixer.music.load(fName)
     pygame.mixer.music.play(loops=0)
@@ -91,10 +127,10 @@ label_inputPayload = tk.Label(frm_encode,text="Input Payload File")
 label_inputPayload.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
 label_inputPayloadPath = tk.Label(frm_encode,text='Payload file path ...',relief=tk.GROOVE,width=50,anchor='w',)
 label_inputPayloadPath.grid(row= 2,column= 0)
-btn_inputPayload = tk.Button(frm_encode,text = 'Select',command=openPayload)
+btn_inputPayload = tk.Button(frm_encode,text = 'Select',command=openPayloadEncoded)
 btn_inputPayload.grid(row=2,column=1)
 
-###Cover object label & button (Encode) R3-R5
+#Cover object label & button (Encode) R3-R5
 label_inputCover = tk.Label(frm_encode,text="Input Cover Object file")
 label_inputCover.grid(row=3,column=0,padx= 0,pady= 5,sticky= 'nw')
 label_inputCoverPath = tk.Label(frm_encode,text='Cover Object file path ...',relief=tk.GROOVE,width=50,anchor='w')
@@ -102,7 +138,7 @@ label_inputCoverPath.grid(row= 4,column= 0)
 btn_inputCover = tk.Button(frm_encode,text = 'Select',command=openCoverload)
 btn_inputCover.grid(row=4,column=1)
 
-###Ouput Stego file (Encode) R5-R6
+#Ouput Stego file (Encode) R5-R6
 label_output = tk.Label(frm_encode,text="Output Encoded File Location")
 label_output.grid(row=5,column=0,padx= 0,pady= 5,sticky= 'nw')
 label_outputPath = tk.Label(frm_encode,text='Select file location to save...',relief=tk.GROOVE,width=50,anchor='w')
@@ -110,7 +146,7 @@ label_outputPath.grid(row= 6,column= 0)
 btn_output = tk.Button(frm_encode,text = 'Select',command=save)
 btn_output.grid(row=6,column=1)
 
-###Select bits (Encode) R7
+#Select bits (Encode) R7
 label_bits = tk.Label(frm_encode,text="Select number of bits: ")
 label_bits.grid(row=7,column=0,padx= 0,pady= 5,sticky= 'nw')
 numberOfBits = [0,1,2,3,4,5,6,7]
@@ -118,9 +154,39 @@ choiceVar = tk.StringVar()
 bitsComboBox = ttk.Combobox(frm_encode,textvariable=choiceVar,values=numberOfBits)
 bitsComboBox.grid(row=7,column=1,pady= 5)
 
-#Start encoding (Encode) R8
+#Start encoding (Encode) R9
 btn_encode = tk.Button(frm_encode, text= 'Start Encoding')
 btn_encode.grid(row=9,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
+
+#Frame Title (Decode) R0
+label_title2 = tk.Label(frm_decode,text='DECODE DATA',font=('Arial',15))
+label_title2.grid(row= 0,column= 0,columnspan= 2,padx= 5,pady= 5,sticky= 'new')
+
+#Input Encoded object label & button (Decode) R1-R2
+label_inputEncoded = tk.Label(frm_decode,text="Input encoded File")
+label_inputEncoded.grid(row=1,column=0,padx= 0,pady= 5,sticky= 'nw')
+label_inputEncodedPath = tk.Label(frm_decode,text='Encoded file path ...',relief=tk.GROOVE,width=50,anchor='w',)
+label_inputEncodedPath.grid(row= 2,column= 0)
+btn_inputEncoded = tk.Button(frm_decode,text = 'Select',)
+btn_inputEncoded.grid(row=2,column=1)
+
+#Ouput Stego file (Decode) R3-R4
+label_output = tk.Label(frm_decode,text="Output Encoded File Location")
+label_output.grid(row=3,column=0,padx= 0,pady= 5,sticky= 'nw')
+label_outputPath = tk.Label(frm_decode,text='Select file location to save...',relief=tk.GROOVE,width=50,anchor='w')
+label_outputPath.grid(row= 4,column= 0)
+btn_output = tk.Button(frm_decode,text = 'Select')
+btn_output.grid(row=4,column=1)
+
+#Select bits (Encode) R5
+label_bits = tk.Label(frm_decode,text="Select number of bits: ")
+label_bits.grid(row=5,column=0,padx= 0,pady= 5,sticky= 'nw')
+bitsComboBox = ttk.Combobox(frm_decode,textvariable=choiceVar,values=numberOfBits)
+bitsComboBox.grid(row=5,column=1,pady= 5)
+
+#Start decoding (Decode) R7
+btn_encode = tk.Button(frm_decode, text= 'Start Decoding')
+btn_encode.grid(row=7,column=0,columnspan= 2,sticky= 'ew',padx = 5, pady = 5)
 
 #Encode button on left side of window
 btn_encode = tk.Button(frm_buttons, text= 'Encode',command=OpenEncodeFrame)
