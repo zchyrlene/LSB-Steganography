@@ -1,7 +1,7 @@
 from PIL import Image
 import os, numpy as np
-#import docx2txt
-#import docx
+import docx2txt
+import docx
 
 MAX_COLOR_VALUE = 255
 MAX_BIT_VALUE = 8
@@ -24,17 +24,17 @@ def get_n_least_significant_bits(value, n):
 def get_n_most_significant_bits(value, n):
     return value >> MAX_BIT_VALUE - n
 
-def shit_n_bits_to_8(value, n):
+def shift_n_bits_to_8(value, n):
     return value << MAX_BIT_VALUE - n
 
 #Function to encode the image that we want to hide, into the cover image
 def encodeImage(image_to_hide, file_to_hide_in, n_bits):
 
     #Copy contents in file_to_hide_in to the encoded txt file
-    file_hide = open(file_to_hide_in, "r")
+    """file_hide = open(file_to_hide_in, "r")
     f = open("encoded_file.txt", "w")
     f.write(file_hide.read())
-    f.close()
+    f.close()"""
 
     #Word doc part
     #file_hide = docx2txt.process(file_to_hide_in)
@@ -64,7 +64,7 @@ def encodeImage(image_to_hide, file_to_hide_in, n_bits):
     #print(a," ", b, " ",c)
     
     #Check size of cover file
-    file_size = os.path.getsize(file_to_hide_in) #(file_size = len(file_bytes))
+    file_size = os.path.getsize(file_to_hide_in) #file_size is the same as len(file_bytes)
     print("The txt file size is ", file_size)
 
     #Keep adding character till it can be reshaped into a list with 3 elements (In the form of RGB (1,2,3))
@@ -79,6 +79,13 @@ def encodeImage(image_to_hide, file_to_hide_in, n_bits):
     width = image_to_hide.size[0]
     height = image_to_hide.size[1]
     print("SIZE OF IMG ", image_to_hide.size)
+    img_size = (width * height) * 3 #multiply by 3 cuz there's 3 bytes per pixel
+
+    #Check if cover file size is smaller than payload img size
+    if(file_size < img_size):
+        print("Cover object size is smaller than payload size")
+        quit()
+    
 
     #print(len(file_bytes))
     
@@ -188,9 +195,9 @@ def decodeFile(file_to_decode, n_bits, height, width):
             #If 10 are the bits then shifting them would look like 10000000
             #this would ofcourse be converted to an int as per python's bit operations.
             
-            r_encoded = shit_n_bits_to_8(r_encoded, n_bits)
-            g_encoded = shit_n_bits_to_8(g_encoded, n_bits)
-            b_encoded = shit_n_bits_to_8(b_encoded, n_bits)
+            r_encoded = shift_n_bits_to_8(r_encoded, n_bits)
+            g_encoded = shift_n_bits_to_8(g_encoded, n_bits)
+            b_encoded = shift_n_bits_to_8(b_encoded, n_bits)
 
             data.append((r_encoded, g_encoded, b_encoded))
             counter += 1
@@ -206,6 +213,7 @@ n_bits = 2
 image_to_hide_path = "tree2.jpg"
 image_to_hide_in_path = "test.txt"
 #image_to_hide_in_path = "wordTest.docx"
+#image_to_hide_in_path = "excel.xlsx"
 
 image_to_hide = Image.open(image_to_hide_path)
 height , width = encodeImage(image_to_hide, image_to_hide_in_path, n_bits)
