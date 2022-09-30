@@ -10,6 +10,7 @@ from io import BytesIO
 import os
 
 import hide_img_in_cover_img
+import hide_img_in_text_file
 
 class IMG_Stegno:
 
@@ -72,6 +73,18 @@ class IMG_Stegno:
             my_payloadImg = Image.open(FileOpen2)
             image_to_hide = my_payloadImg.resize(my_img.size)
 
+    def OpenTextFile(self):
+        global textfile
+        FileOpen = StringVar()
+        FileOpen = askopenfilename(initialdir="/Desktop", title="SelectFile",
+                                    filetypes=(('text files', '*.txt'),
+                                               ("all type of files", "*.*")))
+        if not FileOpen:
+            messagebox.showerror("Error", "You have selected nothing !")
+        else:
+            label_inputFilePath.configure(text=FileOpen)
+            textfile = FileOpen
+
     # frame for choosing encoding options
     def choose_frame0(self,F):
         F.destroy()
@@ -88,6 +101,10 @@ class IMG_Stegno:
         button_bws2 = Button(F0, text='Hide text in mp3 file', command=lambda: self.encode_frame3(F0))
         button_bws2.config(font=('Helvetica', 18), bg='#e8c1c7')
         button_bws2.grid()
+
+        button_bws3 = Button(F0, text='Hide text in a file', command=lambda: self.encode_frame4(F0))
+        button_bws3.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_bws3.grid()
 
         button_back = Button(F0, text='Cancel', command=lambda: IMG_Stegno.back(self, F0))
         button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
@@ -190,6 +207,7 @@ class IMG_Stegno:
 
         F2i.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
 
+
     # frame for hiding stuff in a music file/video?
     def encode_frame3(self, F):
         F.destroy()
@@ -207,6 +225,69 @@ class IMG_Stegno:
 
         F3.grid(row=0,column=0,padx= 20,pady= 20, sticky='nw')
 
+    def height(self):
+        height, width = hide_img_in_text_file.encodeImage(my_img, textfile, int(bitsComboBox4.get()))
+        return height
+
+    def width(self):
+        height, width = hide_img_in_text_file.encodeImage(my_img, textfile, int(bitsComboBox4.get()))
+        return width
+
+    # frame for hiding image in a text file
+    def encode_frame4(self, F):
+        global label_inputFilePath
+        global label_inputCoverPath
+        global bitsComboBox4
+        F.destroy()
+        F4 = Frame(root)
+        label1 = Label(F4, text='Select the text file in which you want to hide an image :')
+        label1.config(font=('Times new roman', 20, 'bold'), bg='#e3f4f1')
+        label1.grid(columnspan=5)
+
+        label1 = Label(F4, text="Name of the File")
+        label1.config(font=('Helvetica', 14, 'bold'))
+        label1.grid(row=3, column=0, padx=0, pady=0, sticky='nw')
+
+        label_inputFilePath = Label(F4, text='Cover Object file path ...', relief=GROOVE, width=57)
+        label_inputFilePath.grid(row=3, column=1, padx=5)
+
+        open_button = Button(F4,text='Open Files',command=self.OpenTextFile)
+        open_button.grid(row=3,column=2,padx= 5,pady= 0)
+
+        coverLabel = Label(F4, text="Hidden Image")
+        coverLabel.config(font=('Helvetica', 14, 'bold'))
+        coverLabel.grid(row=4, column=0, padx=0, pady=0, sticky='nw')
+
+        label_inputCoverPath = Label(F4, text='Hidden image file path ...', relief=GROOVE, width=57)
+        label_inputCoverPath.grid(row=4, column=1, padx=5)
+
+        SelectButton = Button(F4, text="Select the file", command=self.OpenFile)
+        SelectButton.grid(row=4, column=2, padx=5, pady=0)
+
+        label1 = Label(F4, text="Number of bits")
+        label1.config(font=('Helvetica', 14, 'bold'))
+        label1.grid(row=5, column=0, padx=0, pady=0, sticky='nw')
+
+        numberOfBits = [0, 1, 2, 3, 4, 5, 6, 7]
+        choiceVar2 = IntVar()
+        bitsComboBox4 = ttk.Combobox(F4, textvariable=choiceVar2, values=numberOfBits)
+        bitsComboBox4.grid(row=5, column=1, pady=5)
+        # current_bit = int(bitsComboBox.get())
+
+
+        EncodeButton = Button(F4, text="Encode", command=lambda: [
+            hide_img_in_text_file.encodeImage(my_img, textfile, int(bitsComboBox4.get())),
+            hide_img_in_text_file.decodeFile("encoded_file.txt", int(bitsComboBox4.get()),self.height(),self.width()).save("decoded_file.png"),
+            IMG_Stegno.back(self, F4)])
+        EncodeButton.grid(row=6, column=1, pady=5, sticky='n')
+
+        button_back = Button(F4, text='Cancel', command=lambda: IMG_Stegno.choose_frame0(self, F4))
+        button_back.config(font=('Helvetica', 18), bg='#e8c1c7')
+        button_back.grid(pady=15)
+        button_back.grid()
+
+        F4.grid(row=0, column=0, padx=20, pady=20, sticky='nw')
+
     # frame for decode page
     def decode_frame1(self, F):
         F.destroy()
@@ -223,41 +304,6 @@ class IMG_Stegno:
         button_back.grid(pady=15)
         button_back.grid()
         d_f2.grid()
-
-    # function to encode image
-    # def encode_frame2(self, e_F2):
-    #     e_pg = Frame(root)
-    #     myfile = tkinter.filedialog.askopenfilename(
-    #         filetypes=([('png', '*.png'), ('jpeg', '*.jpeg'), ('jpg', '*.jpg'), ('All Files', '*.*')]))
-    #     if not myfile:
-    #         messagebox.showerror("Error", "You have selected nothing !")
-    #     else:
-    #         my_img = Image.open(myfile)
-    #         new_image = my_img.resize((300, 200))
-    #         img = ImageTk.PhotoImage(new_image)
-    #         label3 = Label(e_pg, text='Selected Image')
-    #         label3.config(font=('Helvetica', 14, 'bold'))
-    #         label3.grid()
-    #         board = Label(e_pg, image=img)
-    #         board.image = img
-    #         self.output_image_size = os.stat(myfile)
-    #         self.o_image_w, self.o_image_h = my_img.size
-    #         board.grid()
-    #         label2 = Label(e_pg, text='Enter the message')
-    #         label2.config(font=('Helvetica', 14, 'bold'))
-    #         label2.grid(pady=15)
-    #         text_a = Text(e_pg, width=50, height=10)
-    #         text_a.grid()
-    #         encode_button = Button(e_pg, text='Cancel', command=lambda: IMG_Stegno.back(self, e_pg))
-    #         encode_button.config(font=('Helvetica', 14), bg='#e8c1c7')
-    #         data = text_a.get("1.0", "end-1c")
-    #         button_back = Button(e_pg, text='Encode',
-    #                              command=lambda: [self.enc_fun(text_a, my_img), IMG_Stegno.back(self, e_pg)])
-    #         button_back.config(font=('Helvetica', 14), bg='#e8c1c7')
-    #         button_back.grid(pady=15)
-    #         encode_button.grid()
-    #         e_pg.grid(row=1)
-    #         e_F2.destroy()
 
     # function to decode image
     def decode_frame2(self, d_F2):
