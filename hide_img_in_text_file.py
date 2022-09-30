@@ -152,6 +152,12 @@ def encodeImage(image_to_hide, file_to_hide_in, n_bits):
         for i in data:
             f.write(chr(i))
             # charData.append(chr(i))
+        print(str(height), " ", str(width))
+        f.write("=====")
+        f.write("HEIGHT=")
+        f.write(str(height))
+        f.write("WIDTH=")
+        f.write(str(width))
 
     """for i in range(len(charData)):
         charData[i] = ord(charData[i])"""
@@ -162,19 +168,75 @@ def encodeImage(image_to_hide, file_to_hide_in, n_bits):
 
 
 # Decode image and n_bits as parameters.
-def decodeFile(file_to_decode, n_bits, height, width):
+def decodeFile(file_to_decode, n_bits):
     # List to store the ascii values from the content of the file
     asciiArray = []
     with open(file_to_decode, "r", encoding="utf-8") as f:
         for i in f.read():
+            #print(i)
             asciiArray.append(ord(i))
+        
+        
+    #print("ASD ", asciiArray[-20:])
+    counter = 0
+    index = 0
+    heightWidth = None
+    for i in range(len(asciiArray)):
+        #print(asciiArray[i])
+        if (counter == 5):
+            index = i
+            #print(i)
+            break
+            
+        if (asciiArray[i] == 61):
+            counter += 1
+            #print("hi")
+        else:
+            counter = 0
+    #print("buh ", index)
+    newAsciiArray = asciiArray[:index]
+    asciiHeightWidth = asciiArray[index:]
+    heightWidth = []
+    for i in asciiHeightWidth:
+        heightWidth.append(chr(i))
+    
+    heightArray = []
+    widthArray = []
+    for i in range(len(heightWidth)):
+        print(heightWidth[i])
+        if (heightWidth[i] == "="):
+            print(i)
+            heightArray = heightWidth[i:]
+            break
+    heightArray = heightArray[1:]
+    height2 = []
+    for i in range(len(heightArray)):
+        if (heightArray[i] == "W"):
+            height2 = heightArray[:i]
+            widthArray = heightArray[i:]
+            break
+    for i in range(len(widthArray)):
+        if (widthArray[i] == "="):
+            widthArray = widthArray[i:]
+            break
+    widthArray = widthArray[1:]
+
+    height, width = "", ""
+    for i in height2:
+        height += i
+    for i in widthArray:
+        width += i
+    
+    height = int(height)
+    width = int(width)
+    print(height, " ", width)
     # Keep adding character till it can be reshaped into a list with 3 elements (In the form of RGB (1,2,3))
-    while (len(asciiArray) % 3 != 0):
-        asciiArray.append(ord("A"))
+    while (len(newAsciiArray) % 3 != 0):
+        newAsciiArray.append(ord("A"))
         # print(file_size % 3)
-    npAsciiArray = np.array(asciiArray)
+    npAsciiArray = np.array(newAsciiArray)
     npAsciiArray = np.reshape(npAsciiArray, (-1, 3))
-    # print("ASCIITEST ", npAsciiArray)
+    #print("ASCIITEST ", npAsciiArray)
 
     # matrix that will store the extracted pixel values from the encoded txt file.
     data = []
@@ -207,22 +269,21 @@ def decodeFile(file_to_decode, n_bits, height, width):
 
 # # Running encode function
 # # no. of bits
-# n_bits = 2
+n_bits = 2
 # # path of files replace them as per your need.
-# image_to_hide_path = "cat.jpg"
-# image_to_hide_in_path = "test.txt"
-# # image_to_hide_in_path = "wordTest.docx"
-# # image_to_hide_in_path = "excel.xlsx"
-#
-# image_to_hide = Image.open(image_to_hide_path)
-# height, width = encodeImage(image_to_hide, image_to_hide_in_path, n_bits)
-# print("File encoded Successfully!")
+image_to_hide_path = "tree2.jpg"
+image_to_hide_in_path = "test.txt"
+#image_to_hide_in_path = "wordTest.docx"
+#image_to_hide_in_path = "excel.xlsx"
+image_to_hide = Image.open(image_to_hide_path)
+#encodeImage(image_to_hide, image_to_hide_in_path, n_bits)
+#print("File encoded Successfully!")
 #
 # # running the decode function
-# n_bits = 2
+n_bits = 2
 #
 # # path where you would want to save decoded Image.
-# decoded_image_path = "decoded_file.png"
-# file_to_decode = "encoded_file.txt"
-# decodeFile(file_to_decode, n_bits, height, width).save(decoded_image_path)
-# print("Image decoded Successfully!")
+decoded_image_path = "pics/decoded_file.png"
+file_to_decode = "encoded_file.txt"
+#decodeFile(file_to_decode, n_bits).save(decoded_image_path)
+#print("Image decoded Successfully!")
