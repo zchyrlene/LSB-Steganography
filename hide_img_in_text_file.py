@@ -6,6 +6,15 @@ import docx
 MAX_COLOR_VALUE = 255
 MAX_BIT_VALUE = 8
 
+def valid_xml_char_ordinal(c):
+    codepoint = ord(c)
+    # conditions ordered by presumed frequency
+    return (
+        0x20 <= codepoint <= 0xD7FF or
+        codepoint in (0x9, 0xA, 0xD) or
+        0xE000 <= codepoint <= 0xFFFD or
+        0x10000 <= codepoint <= 0x10FFFF
+        )
 
 # Creates an image with the RGB values
 def createImage(data, resolution):
@@ -159,6 +168,30 @@ def encodeImage(image_to_hide, file_to_hide_in, n_bits):
         f.write("WIDTH=")
         f.write(str(width))
 
+
+    #WRITING TO WORD DOC. NOT WORKING    
+    """textList = []
+    decoded_doc = docx.Document()
+    for i in data:
+        #print(chr(i))
+        x = chr(i)
+        #print(x)
+        cleaned_string = ''.join(c for c in x if valid_xml_char_ordinal(c))
+        #print(cleaned_string)
+        textList.append(cleaned_string)
+    
+    fullText = ""
+    for i in textList:
+        fullText += i
+    #print(fullText)
+    fullText += ("=====")
+    fullText += ("HEIGHT=")
+    fullText += (str(height))
+    fullText += ("WIDTH=")
+    fullText += (str(width))
+    decoded_doc.add_paragraph(fullText)
+    decoded_doc.save("encoded_file.docx")"""
+
     """for i in range(len(charData)):
         charData[i] = ord(charData[i])"""
     # print("Char Data ", charData)
@@ -175,8 +208,19 @@ def decodeFile(file_to_decode, n_bits):
         for i in f.read():
             #print(i)
             asciiArray.append(ord(i))
-        
-        
+
+    #READ WORD DOC. NOT WORKING
+    """fullText = []
+    doc = docx.Document(file_to_decode)
+    for i in doc.paragraphs:
+        #print(i.text)
+        fullText.append(i.text)
+    docText = '\n'.join(fullText)
+    for i in docText:
+        #print(ord(i))
+        asciiArray.append(ord(i))"""
+    
+    print("TEST ", len(asciiArray))
     #print("ASD ", asciiArray[-20:])
     counter = 0
     index = 0
@@ -230,13 +274,21 @@ def decodeFile(file_to_decode, n_bits):
     height = int(height)
     width = int(width)
     print(height, " ", width)
+
+    """asciiSize = len(newAsciiArray) / 3
+    while (asciiSize < (height * width)):
+        #print("HELLO")
+        newAsciiArray.append(ord("A"))
+        asciiSize = len(newAsciiArray) / 3"""
     # Keep adding character till it can be reshaped into a list with 3 elements (In the form of RGB (1,2,3))
     while (len(newAsciiArray) % 3 != 0):
         newAsciiArray.append(ord("A"))
         # print(file_size % 3)
+    
+    print(len(newAsciiArray))
     npAsciiArray = np.array(newAsciiArray)
     npAsciiArray = np.reshape(npAsciiArray, (-1, 3))
-    #print("ASCIITEST ", npAsciiArray)
+    print("ASCIITEST ", len(npAsciiArray))
 
     # matrix that will store the extracted pixel values from the encoded txt file.
     data = []
@@ -262,6 +314,7 @@ def decodeFile(file_to_decode, n_bits):
 
             data.append((r_encoded, g_encoded, b_encoded))
             counter += 1
+            
     # print("DATA ", data)
 
     return createImage(data, (width, height))
@@ -276,8 +329,8 @@ image_to_hide_in_path = "test.txt"
 #image_to_hide_in_path = "wordTest.docx"
 #image_to_hide_in_path = "excel.xlsx"
 image_to_hide = Image.open(image_to_hide_path)
-#encodeImage(image_to_hide, image_to_hide_in_path, n_bits)
-#print("File encoded Successfully!")
+encodeImage(image_to_hide, image_to_hide_in_path, n_bits)
+print("File encoded Successfully!")
 #
 # # running the decode function
 n_bits = 2
@@ -285,5 +338,5 @@ n_bits = 2
 # # path where you would want to save decoded Image.
 decoded_image_path = "pics/decoded_file.png"
 file_to_decode = "encoded_file.txt"
-#decodeFile(file_to_decode, n_bits).save(decoded_image_path)
-#print("Image decoded Successfully!")
+decodeFile(file_to_decode, n_bits).save(decoded_image_path)
+print("Image decoded Successfully!")
