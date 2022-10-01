@@ -2,9 +2,20 @@ from PIL import Image
 import os, numpy as np
 import docx2txt
 import docx
+import aspose.words as aw
 
 MAX_COLOR_VALUE = 255
 MAX_BIT_VALUE = 8
+
+def valid_xml_char_ordinal(c):
+    codepoint = ord(c)
+    # conditions ordered by presumed frequency
+    return (
+        0x20 <= codepoint <= 0xD7FF or
+        codepoint in (0x9, 0xA, 0xD) or
+        0xE000 <= codepoint <= 0xFFFD or
+        0x10000 <= codepoint <= 0x10FFFF
+        )
 
 def to_bin(data):
     """Convert `data` to binary format as string"""
@@ -53,13 +64,25 @@ def encodeTextFile(file_to_hide, image_to_hide_in, n_bits):
     # List to store the ascii values from the content of the file
     file_bytes = []
 
-    with open(file_to_hide, "rb") as out:
+    """with open(file_to_hide, "rb") as out:
         while True:
             c = out.read(1)
+            #print(c)
             if not c:
                 print("End of file")
                 break
-            file_bytes.append(ord(c))
+            file_bytes.append(ord(c))"""
+
+    fullText = []
+    doc = docx.Document(file_to_hide)
+    for i in doc.paragraphs:
+        #print(i.text)
+        fullText.append(i.text)
+    docText = '\n'.join(fullText)
+    for i in docText:
+        #print(ord(i))
+        file_bytes.append(ord(i))
+
 
     # Check size of cover img
     img_size = (width * height) * 3
@@ -174,16 +197,32 @@ def decodeImage(image_to_decode, n_bits):
 
             data.append((r_encoded, g_encoded, b_encoded))
             counter += 1
-            if (counter == 15113):
-                break
+            """if (counter == 12666):
+                break"""
             
     data = np.array(data)
     data = data.flatten()
-    #print(data)
-    with open("decoded_docx.docx", "w", encoding="utf-8") as f:
-        for i in data:
-            #print(chr(i))
-            f.write(chr(i))
+    print(data)
+
+    textList = []
+    decoded_doc = docx.Document()
+    #with open("decoded_docx.docx", "w", encoding="utf-8") as f:
+    for i in data:
+        #print(chr(i))
+        x = chr(i)
+        #print(x)
+        cleaned_string = ''.join(c for c in x if valid_xml_char_ordinal(c))
+        #print(cleaned_string)
+        textList.append(cleaned_string)
+    
+    fullText = ""
+    for i in textList:
+        fullText += i
+    #print(fullText)
+    decoded_doc.add_paragraph(fullText)
+    decoded_doc.save("decoded_docx.docx")
+
+    
     
     return None
     return createImage(data, image_to_decode.size)
@@ -253,8 +292,8 @@ encoded_image_path = "pics/encoded_img_from_docx.png"
 n_bits = 8
 #
 # # path where you would want to save decoded Image.
-decoded_file_path = "decoded_docx.docx"
+decoded_file_path = "decoded_file.txt"
 image_to_decode_path = "pics/encoded_img_from_docx.png"
 image_to_decode = Image.open(image_to_decode_path)
-#decodeImage(image_to_decode, n_bits)
-#print("Image decoded Successfully!")
+decodeImage(image_to_decode, n_bits)
+print("Image decoded Successfully!")
