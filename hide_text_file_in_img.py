@@ -64,16 +64,18 @@ def encodeTextFile(file_to_hide, image_to_hide_in, n_bits):
     # List to store the ascii values from the content of the file
     file_bytes = []
 
-    """with open(file_to_hide, "rb") as out:
+    #Uncomment to encode txt file in img
+    with open(file_to_hide, "rb") as out:
         while True:
             c = out.read(1)
             #print(c)
             if not c:
                 print("End of file")
                 break
-            file_bytes.append(ord(c))"""
+            file_bytes.append(ord(c))
 
-    fullText = []
+    #Uncomment to encode docx file in img
+    """fullText = []
     doc = docx.Document(file_to_hide)
     for i in doc.paragraphs:
         #print(i.text)
@@ -81,7 +83,7 @@ def encodeTextFile(file_to_hide, image_to_hide_in, n_bits):
     docText = '\n'.join(fullText)
     for i in docText:
         #print(ord(i))
-        file_bytes.append(ord(i))
+        file_bytes.append(ord(i))"""
 
 
     # Check size of cover img
@@ -204,7 +206,13 @@ def decodeImage(image_to_decode, n_bits):
     data = data.flatten()
     print(data)
 
-    textList = []
+    #Uncomment to retrieve txt file from image
+    with open("decoded_file.txt", "w", encoding="utf-8") as f:
+        for i in data:
+            f.write(chr(i))
+
+    #Uncomment to retrieve docx file from image
+    """textList = []
     decoded_doc = docx.Document()
     #with open("decoded_docx.docx", "w", encoding="utf-8") as f:
     for i in data:
@@ -220,7 +228,7 @@ def decodeImage(image_to_decode, n_bits):
         fullText += i
     #print(fullText)
     decoded_doc.add_paragraph(fullText)
-    decoded_doc.save("decoded_docx.docx")
+    decoded_doc.save("decoded_docx.docx")"""
 
     
     
@@ -280,19 +288,18 @@ n_bits = 8
 #image_to_hide_in_path = "test.txt"
 #image_to_hide_in_path = "wordTest.docx"
 #image_to_hide_in_path = "excel.xlsx"
-file_to_hide_path = "wordTest.docx"
+file_to_hide_path = "test.txt"
 cover_img_path = "pics/tree.jpg"
 image_to_hide = Image.open(cover_img_path)
 #height, width = encodeImage(image_to_hide, image_to_hide_in_path, n_bits)
-encoded_image_path = "pics/encoded_img_from_docx.png"
-#encodeTextFile(file_to_hide_path, image_to_hide, n_bits).save(encoded_image_path)
-#print("File encoded Successfully!")
+encoded_image_path = "pics/encoded_img_from_file.png"
+encodeTextFile(file_to_hide_path, image_to_hide, n_bits).save(encoded_image_path)
+print("File encoded Successfully!")
 #
 # # running the decode function
 n_bits = 8
 #
 # # path where you would want to save decoded Image.
-decoded_file_path = "decoded_file.txt"
 image_to_decode_path = "pics/encoded_img_from_docx.png"
 image_to_decode = Image.open(image_to_decode_path)
 decodeImage(image_to_decode, n_bits)
