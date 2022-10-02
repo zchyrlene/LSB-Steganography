@@ -5,7 +5,7 @@ MAX_BIT_VALUE = 8
 
 #Creates an image with the RGB values
 def createImage(data, resolution):
-    image = Image.new("RGB", resolution)
+    image = Image.new("RGBA", resolution)
     image.putdata(data)
     return image
 
@@ -35,8 +35,13 @@ def encodeImage(image_to_hide, image_to_hide_in, n_bits):
     hide_image = image_to_hide.load()
     hide_in_image = image_to_hide_in.load()
 
+    print(hide_image[0,0])
+    print(hide_in_image[0,0])
+
     #this will store the values of each individual pixel as a matrix.
     data = []
+
+    
 
     #looping the hide_image object.
     
@@ -48,19 +53,35 @@ def encodeImage(image_to_hide, image_to_hide_in, n_bits):
             try:
                 #the value of n can be 1 or 2 and you won't see much difference in the encoded image.
                 #gets n most significant bits of r,g,b values of image to hide.
-                r_hide, g_hide, b_hide= hide_image[x,y]
-                r_hide = get_n_most_significant_bits(r_hide, n_bits)
-                g_hide = get_n_most_significant_bits(g_hide, n_bits)
-                b_hide = get_n_most_significant_bits(b_hide, n_bits)
+                #print(len(hide_image[x,y]))
+                a_hide = None
+                if(len(hide_image[x,y]) == 4):
+                    r_hide, g_hide, b_hide, a_hide= hide_image[x,y]
+                    r_hide = get_n_most_significant_bits(r_hide, n_bits)
+                    g_hide = get_n_most_significant_bits(g_hide, n_bits)
+                    b_hide = get_n_most_significant_bits(b_hide, n_bits)
+                else:
+                    r_hide, g_hide, b_hide= hide_image[x,y]
+                    r_hide = get_n_most_significant_bits(r_hide, n_bits)
+                    g_hide = get_n_most_significant_bits(g_hide, n_bits)
+                    b_hide = get_n_most_significant_bits(b_hide, n_bits)
 
                 # remove least n significant bits of image to hide in so we can store
                 # the n most significant bits in that place.
                 
-                r_hide_in, g_hide_in, b_hide_in= hide_in_image[x,y]
-                r_hide_in = remove_n_least_significant_bits(r_hide_in, n_bits)
-                g_hide_in = remove_n_least_significant_bits(g_hide_in, n_bits)
-                b_hide_in = remove_n_least_significant_bits(b_hide_in, n_bits)
+                a_hide_in = None
+                if(len(hide_in_image[x,y]) == 4):
+                    r_hide_in, g_hide_in, b_hide_in, a_hide_in= hide_in_image[x,y]
+                    r_hide_in = remove_n_least_significant_bits(r_hide_in, n_bits)
+                    g_hide_in = remove_n_least_significant_bits(g_hide_in, n_bits)
+                    b_hide_in = remove_n_least_significant_bits(b_hide_in, n_bits)
+                else:
+                    r_hide_in, g_hide_in, b_hide_in= hide_in_image[x,y]
+                    r_hide_in = remove_n_least_significant_bits(r_hide_in, n_bits)
+                    g_hide_in = remove_n_least_significant_bits(g_hide_in, n_bits)
+                    b_hide_in = remove_n_least_significant_bits(b_hide_in, n_bits)
 
+                
                 #Adding each MSB R,G,B from payload to LSB R,G,B cover image
                 data.append((r_hide + r_hide_in, 
                              g_hide + g_hide_in,
@@ -79,6 +100,7 @@ def decodeImage(image_to_decode, n_bits):
     width = image_to_decode.size[0]
     height = image_to_decode.size[1]
     encoded_image = image_to_decode.load()
+    #print(encoded_image[0,0])
 
     #matrix that will store the extracted pixel values from the encoded Image.
     data = []
@@ -86,14 +108,23 @@ def decodeImage(image_to_decode, n_bits):
     #looping through every pixel in the encoded Image.
     for y in range(height):
         for x in range(width):
+            a_encoded = None
+            if(len(encoded_image[x,y]) == 4):
+                #gets rgb values of encoded image.
+                r_encoded, g_encoded, b_encoded, a_encoded = encoded_image[x,y]
 
-            #gets rgb values of encoded image.
-            r_encoded, g_encoded, b_encoded = encoded_image[x,y]
+                #get n least significant bits for each r,g,b value of the encoded image
+                r_encoded = get_n_least_significant_bits(r_encoded, n_bits)
+                g_encoded = get_n_least_significant_bits(g_encoded, n_bits)
+                b_encoded = get_n_least_significant_bits(b_encoded, n_bits)
+            else:
+                #gets rgb values of encoded image.
+                r_encoded, g_encoded, b_encoded = encoded_image[x,y]
 
-            #get n least significant bits for each r,g,b value of the encoded image
-            r_encoded = get_n_least_significant_bits(r_encoded, n_bits)
-            g_encoded = get_n_least_significant_bits(g_encoded, n_bits)
-            b_encoded = get_n_least_significant_bits(b_encoded, n_bits)
+                #get n least significant bits for each r,g,b value of the encoded image
+                r_encoded = get_n_least_significant_bits(r_encoded, n_bits)
+                g_encoded = get_n_least_significant_bits(g_encoded, n_bits)
+                b_encoded = get_n_least_significant_bits(b_encoded, n_bits)
 
             #shifts the n bits to right so that they occupy a total of 8 bit spaces.
             #If 10 are the bits then shifting them would look like 10000000
@@ -108,31 +139,30 @@ def decodeImage(image_to_decode, n_bits):
     return createImage(data, image_to_decode.size)
 
 #no. of bits
-# n_bits = 2
-# #path of files replace them as per your need.
-# image_to_hide_path = "pic.jpg"
-# image_to_hide_in_path = "tree.jpg"
-# #this is the path where we will save the encoded Image.
-#encoded_image_path = "encoded.png"
+n_bits = 2
+#path of files replace them as per your need.
+image_to_hide_path = "pics/dog.png"
+image_to_hide_in_path = "pics/pic.jpg"
+#this is the path where we will save the encoded Image.
+encoded_image_path = "pics/encoded.png"
 #
 # #PIL.Image object
-# image_to_hide = Image.open(image_to_hide_path)
-# image_to_hide_in = Image.open(image_to_hide_in_path)
+image_to_hide = Image.open(image_to_hide_path)
+image_to_hide_in = Image.open(image_to_hide_in_path)
 # print("Image to hide ", image_to_hide)
 # print("Image to hide in ", image_to_hide_in)
 # #to hide an image inside another image it they both need to be of the same size.
-# image_to_hide=image_to_hide.resize(image_to_hide_in.size)
-# # #encoding the image and saving it in the path
-# encodeImage(image_to_hide, image_to_hide_in, n_bits).save(encoded_image_path)
-
-#print("Image Encoded Successfully.")
+image_to_hide=image_to_hide.resize(image_to_hide_in.size)
+#encoding the image and saving it in the path
+encodeImage(image_to_hide, image_to_hide_in, n_bits).save(encoded_image_path)
+print("Image Encoded Successfully.")
 
 #running the decode function
-# n_bits = 2
-# encoded_image_path = "encoded.png"
+#n_bits = 2
+encoded_image_path = "pics/encoded.png"
 
 #path where you would want to save decoded Image.
-# decoded_image_path = "decoded.png"
-# image_to_decode = Image.open(encoded_image_path)
-# decodeImage(image_to_decode, n_bits).save(decoded_image_path)
-#print("Image decoded Successfully!")
+decoded_image_path = "pics/decoded.png"
+image_to_decode = Image.open(encoded_image_path)
+decodeImage(image_to_decode, n_bits).save(decoded_image_path)
+print("Image decoded Successfully!")
