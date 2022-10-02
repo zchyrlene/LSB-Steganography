@@ -14,6 +14,7 @@ def case(a):
 def encode():
 	print("Encoding")
 
+
 	#Read audio file
 	audio = wave.open("sound.wav",mode="rb")
 
@@ -21,7 +22,7 @@ def encode():
 	frame_bytes = bytearray(list(audio.readframes(audio.getnframes())))
 
 	#User enter text to encode
-	string = "hello"
+	string = input("Enter secret text: ")
 
 	#Append dummy data to fill out bytes. Receiver will detect and remove filler chars
 	string = string + int((len(frame_bytes)-(len(string)*8*8))/8) *'#'
@@ -49,7 +50,14 @@ def encode():
 #Decoding
 def decode():
 	print("Decoding")
-	audio = wave.open("encodedsound.wav", mode='rb')
+	file_to_decode = input("Enter file name to decode: ")
+
+	#audio = wave.open("encodedsound.wav", mode='rb')
+	try:
+		audio = wave.open(file_to_decode, mode="rb")
+	except Exception as e:
+		print("Please enter a valid file")
+		quit()
 
 	#Convert audio to byte array
 	frame_bytes = bytearray(list(audio.readframes(audio.getnframes())))
