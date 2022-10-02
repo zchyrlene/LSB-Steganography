@@ -38,21 +38,29 @@ def encode():
 
 	for i in range(0,10):
 		print(frame_bytes[i])
-	newAudio =  wave.open('sampleStego.wav', 'wb')
+	newAudio =  wave.open('encodedsound.wav', 'wb')
 	newAudio.setparams(audio.getparams())
 	newAudio.writeframes(frame_modified)
 
 	newAudio.close()
 	audio.close()
-	print("Succesfully encoded inside sampleStego.wav")
+	print("Succesfully encoded inside encodedsound.wav")
 
 #Decoding
 def decode():
 	print("Decoding")
-	audio = wave.open("sampleStego.wav", mode='rb')
+	audio = wave.open("encodedsound.wav", mode='rb')
+
+	#Convert audio to byte array
 	frame_bytes = bytearray(list(audio.readframes(audio.getnframes())))
+
+	#Extract LSB of each byte
 	extracted = [frame_bytes[i] & 1 for i in range(len(frame_bytes))]
+
+	#Convert byte array back to string
 	string = "".join(chr(int("".join(map(str,extracted[i:i+8])),2)) for i in range(0,len(extracted),8))
+
+	#Cut off filler chars
 	decoded = string.split("###")[0]
 	print("Sucessfully decoded: "+decoded)
 	audio.close()
